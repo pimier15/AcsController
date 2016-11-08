@@ -298,7 +298,7 @@ namespace PLImg_V2
 
         public void XYWait2Arrive(int targetPosX,int targetPosY)
         {
-            
+            Console.WriteLine( "arrived come in " );
         }
 
         public void XYSetSpeed(int speedX, int speedY)
