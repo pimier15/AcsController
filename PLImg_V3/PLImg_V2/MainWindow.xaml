@@ -115,7 +115,7 @@
 
             <!--플라이 아웃 스테이지 구동-->
             <mahapps:FlyoutsControl Grid.Row="1">
-                <mahapps:Flyout x:Name="flyFunc" IsOpen="True"  Header="Stage Control" Position="Left" Width="390" Height="495" Margin="0,0,5,0" >
+                <mahapps:Flyout x:Name="flyFunc" IsOpen="False"  Header="Stage Control" Position="Left" Width="390" Height="495" Margin="0,0,5,0" >
                     <Grid x:Name="gridflyback" Grid.Row="1" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
