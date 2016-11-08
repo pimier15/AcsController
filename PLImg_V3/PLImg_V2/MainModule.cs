@@ -55,6 +55,8 @@ namespace PLImg_V2
         GrabStatus            StatusGrab      ;
         FullScanState         StatusFullScan  ;
         ICameraSetting        CameraSet       ;
+        IXYStageOrder         XYStageControler;
+        IZStageOrder          ZStageControler ;
         ISigmakokiStageUnit   RStageControler ;
         AcsContol             AcsXYZControl   ;
 
