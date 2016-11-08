@@ -111,7 +111,7 @@ namespace PLImg_V2
                     break;
 
                 case FullScanState.Pause:
-                    XYMoveAbsPos(DataFullScan.PosXStart,DataFullScan.PosYStart*(LineCount+1));
+                    //XYMoveAbsPos(DataFullScan.PosXStart,DataFullScan.PosYStart*(LineCount+1));
                     XYWait2Arrive( DataFullScan.PosXStart, DataFullScan.PosYStart * (LineCount + 1) );
                     StatusFullScan = FullScanState.Start;
                     break;

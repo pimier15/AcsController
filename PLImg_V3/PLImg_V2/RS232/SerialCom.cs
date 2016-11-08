@@ -9,6 +9,7 @@ namespace PLImg_V2
 {
     class SerialCom
     {
+        const int TransSpeed = 38400;
         private RS232C mbSession;
 
         public void OpenSession( String Comport )
@@ -16,7 +17,7 @@ namespace PLImg_V2
             try
             {
                 mbSession = new RS232C();
-                mbSession.Connect( Comport );
+                mbSession.Connect( Comport , TransSpeed );
                 mbSession.Delimiter = new byte[] { 0x0d, 0x0a };
             }
             catch ( Exception e )

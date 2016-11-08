@@ -22,12 +22,12 @@ namespace PLImg_V2
         {
         }
 
-        public bool Connect( string connectArgs )
+        public bool Connect( string connectArgs, int transspeed )
         {
             string[] str = connectArgs.Split(',');
             if ( str.Length == 1 )
             {
-                return Open( Convert.ToInt32( str[0] ), 9600 );
+                return Open( Convert.ToInt32( str[0] ), transspeed );
             }
             else if ( str.Length == 2 )
             {
