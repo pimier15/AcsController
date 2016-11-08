@@ -138,7 +138,8 @@
                         <Button x:Name ="btnROrigin"     Grid.Row="2" Grid.Column="0" Content="XYOrigin"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnROrigin_Click"/>
                         <Button x:Name ="btnRForceStop"  Grid.Row="2" Grid.Column="1" Content="XYForce Stop"  Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="50,10,10,10" FontSize="14" Click="btnRForceStop_Click"/>
 
-                        <Button x:Name ="btnXYMove"      Grid.Row="3" Grid.Column="0" Content="XY Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnXYMove_Click"/>
+                        <Button x:Name ="btnXMove"      Grid.Row="3" Grid.Column="0" Content="XY Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnXMove_Click"/>
+                        <Button x:Name ="btnYMove"      Grid.Row="4" Grid.Column="0" Content="XY Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnYMove_Click"/>
                         <Button x:Name ="btnZMove"      Grid.Row="5" Grid.Column="0" Content="Z Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnZMove_Click"/>
                         <Button x:Name ="btnRMove"      Grid.Row="6" Grid.Column="0" Content="R Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnRMove_Click"/>
 

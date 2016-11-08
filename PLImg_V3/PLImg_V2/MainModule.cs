@@ -55,10 +55,8 @@ namespace PLImg_V2
         GrabStatus            StatusGrab      ;
         FullScanState         StatusFullScan  ;
         ICameraSetting        CameraSet       ;
-        IXYStageOrder         XYStageControler;
-        IZStageOrder          ZStageControler ;
         ISigmakokiStageUnit   RStageControler ;
-        AcsContol             AcsXYControl    ;
+        AcsContol             AcsXYZControl   ;
 
         Image<Gray, byte>     CurrentImg      ;
         byte[]                ImgSrcByte      ;
@@ -82,7 +80,7 @@ namespace PLImg_V2
             IConnection DalsaConnect = new Connection()         ;
             AFMeasrue                = new AFCalc()             ;
             DataFullScan             = new FullScanData()       ;
-            AcsXYControl             = new AcsContol()          ;
+            AcsXYZControl             = new AcsContol()          ;
             
             CreateDeviceMana(DalsaConnect);
             TimerSetting();
@@ -287,13 +285,16 @@ namespace PLImg_V2
         #region XYStageOrder
         public void XYOrigin()
         {
-            XYStageControler.XYOrigin();
         }
 
-        public void XYMoveAbsPos(int posX,int posY)
+        public void XMoveAbsPos(int posX)
         {
-            AcsXYControl.XMove( posX );
-            AcsXYControl.YMove( posY );
+            AcsXYZControl.XMove( posX );
+        }
+
+        public void YMoveAbsPos(int posY )
+        {
+            AcsXYZControl.YMove( posY );
         }
 
         public void XYWait2Arrive(int targetPosX,int targetPosY)
@@ -303,7 +304,7 @@ namespace PLImg_V2
 
         public void XYSetSpeed(int speedX, int speedY)
         {
-            AcsXYControl.SetSpeed( speedX, speedY , 100 );
+            AcsXYZControl.SetSpeed( speedX, speedY , 100 );
         }
 
         #endregion
@@ -325,22 +326,22 @@ namespace PLImg_V2
         #region ZStageOrder
         public void ZOrigin()
         {
-            ZStageControler.ZOrigin();
+            
         }
 
         public void ZMoveAbsPos(int posZ)
         {
-            ZStageControler.ZMoveAbsPos(posZ);
+            AcsXYZControl.ZMove( posZ );
         }
 
         public void ZWait2Arrive(int targetPosZ)
         {
-            ZStageControler.ZWait2Arrive(targetPosZ);
+            
         }
 
-        public void SetZSpeed(int speedZ, int accZ)
+        public void SetSpeed(int speedX,int speedY, int speedZ)
         {
-            ZStageControler.ZSetSpeed(speedZ,  accZ);
+            AcsXYZControl.SetSpeed(speedX,speedY,speedZ);
         }
 
 
@@ -413,7 +414,7 @@ namespace PLImg_V2
 
         public void XYStageInit(int port)
         {
-            AcsXYControl.Connect( port );
+            AcsXYZControl.Connect( port );
             //XYStageControler = new DctXYStageControl();
             //ZStageControler = new DctZStageControl();
             //if (!XYStageControler.XYStageConnect(port.ToString())) { XYStageControler = new DumyDctXYStageControl(); }

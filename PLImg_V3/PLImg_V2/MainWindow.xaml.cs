@@ -173,17 +173,17 @@ namespace PLImg_V2
         void InitViewWin( )
         {
             nudEndXPos.Value = 0;
-            nudStartXPos.Value = 4000;
+            nudStartXPos.Value = 100;
             nudStartYPos.Value = 0;
             nudEndYPos.Value = 0;
-            nudXSpeed.Value = 1550;
-            nudYSpeed.Value = 1550;
+            nudXSpeed.Value = 100;
+            nudYSpeed.Value = 100;
             nudExtime.Value = 400;
             nudlinerate.Value = 4000;
             nudRSpeed.Value = 200;
-            nudGoXPos.Value = 5000;
-            nudGoYPos.Value = 5000;
-            nudZSpeed.Value = 300;
+            nudGoXPos.Value = 50;
+            nudGoYPos.Value = 50;
+            nudZSpeed.Value = 50;
         }
         #endregion
 
@@ -193,13 +193,11 @@ namespace PLImg_V2
             flyFunc.IsOpen = false;
             flySetting.IsOpen = true;
         }
-
         private void btnFunc_Click(object sender, RoutedEventArgs e)
         {
             flySetting.IsOpen = false;
             flyFunc.IsOpen = true;
         }
-
         private void btnLineScan_Click(object sender, RoutedEventArgs e)
         {
             ClearImgBox();
@@ -256,36 +254,43 @@ namespace PLImg_V2
         #endregion
 
         #region Stage
-        // XYStage //
-        public void btnXYMove_Click( object sender, RoutedEventArgs e )
+        /* Helper*/
+        void SetSpeedXYZ( )
         {
-            ModMain.XYMoveAbsPos( (int)nudGoXPos.Value, (int)nudGoYPos.Value );
+            try
+            {
+                ModMain.SetSpeed( (int)nudXSpeed.Value, (int)nudYSpeed.Value, (int)nudZSpeed.Value );
+            }
+            catch ( Exception )
+            {
+                nudXSpeed.Value = 0;
+                nudYSpeed.Value = 0;
+                nudZSpeed.Value = 0;
+            }
         }
+
+        // XYStage //
+        private void btnYMove_Click( object sender, RoutedEventArgs e )
+        {
+            ModMain.YMoveAbsPos( (int)nudGoYPos.Value );
+        }
+
+        private void btnXMove_Click( object sender, RoutedEventArgs e )
+        {
+            ModMain.XMoveAbsPos( (int)nudGoXPos.Value );
+        }
+
         private void btnOrigin_Click( object sender, RoutedEventArgs e )
         {
             ModMain.XYOrigin();
         }
         private void nudXSpeed_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double?> e )
         {
-            try
-            {
-                ModMain.XYSetSpeed( (int)nudXSpeed.Value, (int)nudYSpeed.Value );
-            }
-            catch ( Exception )
-            {
-                nudXSpeed.Value = 0;
-            }
+            SetSpeedXYZ();
         }
         private void nudYSpeed_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double?> e )
         {
-            try
-            {
-                ModMain.XYSetSpeed( (int)nudXSpeed.Value, (int)nudYSpeed.Value );
-            }
-            catch ( Exception )
-            {
-                nudYSpeed.Value = 0;
-            }
+            SetSpeedXYZ();
         }
         private void btnForceStop_Click( object sender, RoutedEventArgs e )
         {
@@ -295,11 +300,11 @@ namespace PLImg_V2
         // ZStage //
         private void btnZMove_Click( object sender, RoutedEventArgs e )
         {
-
+            ModMain.ZMoveAbsPos( (int)nudGoZPos.Value );
         }
         private void nudZSpeed_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double?> e )
         {
-
+            SetSpeedXYZ();
         }
         private void btnZOrigin_Click( object sender, RoutedEventArgs e )
         {
@@ -332,7 +337,6 @@ namespace PLImg_V2
         #endregion
 
         #region Chart
-
         async void AsySetLineValue(List<int> Yinput, SeriesCollection seriescol)
         {
             makeseries();
@@ -354,7 +358,6 @@ namespace PLImg_V2
             //await Task.Run(() => lineProChart.Dispatcher.BeginInvoke(
             //    (Action)(() => seriesbox[0].Values = chartV)));
         }
-
         void connectValue()
         {
             chartV = new ChartValues<int>(YValue);
@@ -370,7 +373,6 @@ namespace PLImg_V2
                 }
             };
         }
-
         List<int> Arr2List(byte[] input)
         {
             List<int> output = new List<int>();
@@ -382,10 +384,10 @@ namespace PLImg_V2
             return output;
         }
 
+
+
         #endregion
 
-        
-
-        
+       
     }
 }
