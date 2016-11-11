@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using NationalInstruments.VisaNS;
 using IDctXYZStage;
 
+
 namespace PLImg_V2
 {
     enum GrabStatus { Frea,Grab }
@@ -176,7 +177,7 @@ namespace PLImg_V2
         #endregion
 
         #region Scanning
-        public async void StartLineScan(int startposX, int startposY, int endposX, int speed)
+        public async void StartLineScan(int startposX, int endposX , int speed)
         {
             DataFullScan.LineLimit = 0;
             InitCount();
@@ -187,13 +188,12 @@ namespace PLImg_V2
 
             evtLineScanStart();
             await Task.Run(()=> {
-                ScanInit(startposX, startposX, endposX, speed);
+                LlineScanInit( startposX );
                 ImgSrcByte = new byte[0];
                 CheckGrabStatus();
-
-                XYStageControler.XYMoveAbsPos(endposX, startposY);
+                AcsXYZControl.XMove( endposX );
                 ScanStart = true;
-                XYStageControler.XYWait2ArriveEpsilon(endposX, startposY, 80);
+                System.Threading.Thread.Sleep( 5000 ); //여기서 목표 위치 확인하고 도착시 스캔 끝내기 
                 ScanStop = true;
             });
         }
@@ -216,12 +216,20 @@ namespace PLImg_V2
             });
         }
 
+        void LlineScanInit( int startposX )
+        {
+            AcsXYZControl.SetSpeed( 100 , 100 , 100 );
+            AcsXYZControl.XMove( startposX );
+            //AcsXYZControl.YMove( startposY );
+            System.Threading.Thread.Sleep( 2000 );
+        }
+
         void ScanInit(int startposX, int startposY, int endposX, int speed)
         {
-            XYStageControler.XYSetSpeed(20000, 20000, 0, 0);
-            XYStageControler.XYMoveAbsPos(startposX, startposY);
-            XYStageControler.XYWait2Arrive(startposX, startposY);
-            XYStageControler.XYSetSpeed(speed, 500, 0, 0); // 500 is speed of Y. it is fixed Value
+            AcsXYZControl.SetSpeed( 100 , 100 , 100 );
+            AcsXYZControl.XMove( startposX );
+            //AcsXYZControl.YMove( startposY );
+            System.Threading.Thread.Sleep( 2000 );
         }
 
         void CheckGrabStatus()

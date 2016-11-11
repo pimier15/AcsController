@@ -201,7 +201,7 @@ namespace PLImg_V2
         private void btnLineScan_Click(object sender, RoutedEventArgs e)
         {
             ClearImgBox();
-            ModMain.StartLineScan( (int)nudStartXPos.Value, (int)nudEndXPos.Value, (int)nudXSpeed.Value,(int)nudYSpeed.Value );
+            ModMain.StartLineScan( (int)nudStartXPos.Value, (int)nudEndXPos.Value, (int)nudXSpeed.Value );
         }
         private void btnFullScan_Click(object sender, RoutedEventArgs e)
         {

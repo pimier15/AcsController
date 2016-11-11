@@ -96,7 +96,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Interop.SPIIPLUSCOM660Lib.1.0">
-      <HintPath>..\..\..\..\..\..\Users\Pl\Desktop\so\DLL모음\AcsController\Interop.SPIIPLUSCOM660Lib.1.0.dll</HintPath>
+      <HintPath>..\..\..\..\jobswver\AcsControllerDCTXYZStage\PLImg_V3\Interop.SPIIPLUSCOM660Lib.1.0.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="LiveCharts, Version=0.7.17.0, Culture=neutral, PublicKeyToken=c5935629d38af058, processorArchitecture=MSIL">

@@ -61,9 +61,8 @@
       <HintPath>..\packages\Accord.Statistics.3.3.0\lib\net45\Accord.Statistics.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DALSA.SaperaLT.SapClassBasic, Version=8.10.0.1616, Culture=neutral, PublicKeyToken=4d8604101dcb6b58, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\DLL모음\Dalsa\DALSA.SaperaLT.SapClassBasic.dll</HintPath>
+    <Reference Include="DALSA.SaperaLT.SapClassBasic">
+      <HintPath>..\DALSA.SaperaLT.SapClassBasic.dll</HintPath>
     </Reference>
     <Reference Include="DotImaging.Primitives2D, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DotImaging.Primitives2D.4.8.3\lib\net45\DotImaging.Primitives2D.dll</HintPath>
