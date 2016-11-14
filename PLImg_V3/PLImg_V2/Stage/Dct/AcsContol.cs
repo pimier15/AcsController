@@ -40,7 +40,7 @@ namespace PLImg_V2
         {
             Ch.Enable( Axis["X"], Ch.ACSC_ASYNCHRONOUS, ref pWait );
             Ch.Enable( Axis["Y"], Ch.ACSC_ASYNCHRONOUS, ref pWait );
-            Ch.Enable( Axis["Z"], Ch.ACSC_ASYNCHRONOUS, ref pWait );
+            //Ch.Enable( Axis["Z"], Ch.ACSC_ASYNCHRONOUS, ref pWait );
         }
 
         public void XMove( int pos )

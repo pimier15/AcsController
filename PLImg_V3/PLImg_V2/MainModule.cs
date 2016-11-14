@@ -192,9 +192,9 @@ namespace PLImg_V2
                 ImgSrcByte = new byte[0];
                 CheckGrabStatus();
                 AcsXYZControl.XMove( endposX );
-                ScanStart = true;
+                StatusFullScan = FullScanState.Start;
                 System.Threading.Thread.Sleep( 5000 ); //여기서 목표 위치 확인하고 도착시 스캔 끝내기 
-                ScanStop = true;
+                StatusFullScan = FullScanState.Stop;
             });
         }
 

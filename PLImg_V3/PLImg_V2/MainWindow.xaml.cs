@@ -244,7 +244,7 @@ namespace PLImg_V2
         {
             try
             {
-                ModMain.SetLineRate( (int)nudlinerate.Value );
+                //ModMain.SetLineRate( (int)nudlinerate.Value );
             }
             catch ( Exception )
             {
@@ -386,8 +386,17 @@ namespace PLImg_V2
 
 
 
+
         #endregion
 
-       
+        private void Label_KeyUp( object sender, System.Windows.Input.KeyEventArgs e )
+        {
+
+        }
+
+        private void nudlinerate_KeyUp( object sender, System.Windows.Input.KeyEventArgs e )
+        {
+            ModMain.SetLineRate( (int)nudlinerate.Value );
+        }
     }
 }
