@@ -119,6 +119,7 @@ namespace PLImg_V2
             ModMain.evtLineScanStart += new TransScanStatus( SetImgBoxStretch );
             ModMain.evtLineScanCom += new TransScanStatus( SetImgBoxFit );
             ModMain.evtFScanImgOnGoing += new TransSplitImgArr( DisplayFullScanImg );
+            ModMain.evtFeedbackPos += new TransFeedBackPos( DisplayPos );
 
             imgboxReal.SizeMode = PictureBoxSizeMode.StretchImage;
 
@@ -184,6 +185,13 @@ namespace PLImg_V2
             nudGoXPos.Value = 50;
             nudGoYPos.Value = 50;
             nudZSpeed.Value = 50;
+        }
+
+        void DisplayPos(double[] inputPos)
+        {
+            lblXpos.Content = inputPos[0].ToString();
+            lblYpos.Content = inputPos[1].ToString();
+            //lblZpos.Content = inputPos[0].ToString();
         }
         #endregion
 

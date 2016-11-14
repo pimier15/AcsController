@@ -176,17 +176,18 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" FontWeight="Bold" Content="Exposure Time" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16"/>
-                        <Label Grid.Row="1" FontWeight="Bold" Content="Line Rate"     VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
-                        <Label Grid.Row="2" FontWeight="Bold" Content="Resolution"    VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
-                        <Label Grid.Row="3" FontWeight="Bold" Content="Buffer Number" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
-                        <Label Grid.Row="4" FontWeight="Bold" Content="AF Variance"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="0" FontWeight="Bold" Content="X Pos" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16"/>
+                        <Label Grid.Row="1" FontWeight="Bold" Content="Y Pos"     VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="2" FontWeight="Bold" Content="Z Pos"     VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="3" FontWeight="Bold" Content="Resolution"    VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="4" FontWeight="Bold" Content="Buffer Number" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="5" FontWeight="Bold" Content="AF Variance"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
 
-                        <Label Grid.Row="0"  Grid.Column="1" FontWeight="Bold" Content="Exposure Time" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16"/>
-                        <Label Grid.Row="1"  Grid.Column="1" FontWeight="Bold" Content="Line Rate"     VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
-                        <Label Grid.Row="2"  Grid.Column="1" FontWeight="Bold" Content="Resolution"    VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
-                        <Label Grid.Row="3"  Grid.Column="1" FontWeight="Bold" x:Name="lblBuffNum" Content="Buffer Number" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
-                        <Label Grid.Row="4"  Grid.Column="1" FontWeight="Bold" x:Name="lblAFV"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="0"  Grid.Column="1" FontWeight="Bold" x:Name="lblXpos"     Content="0"      VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16"/>
+                        <Label Grid.Row="1"  Grid.Column="1" FontWeight="Bold" x:Name="lblYpos"     Content="0"      VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="2"  Grid.Column="1" FontWeight="Bold" x:Name="lblZpos"     Content="0"      VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="3"  Grid.Column="1" FontWeight="Bold" x:Name="lblBuffNum"  Content="0"      VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
+                        <Label Grid.Row="4"  Grid.Column="1" FontWeight="Bold" x:Name="lblAFV"      Content="0"      VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,10,10,10" FontSize="16" />
 
                     </Grid>
                 </Border>

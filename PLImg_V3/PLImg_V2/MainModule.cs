@@ -29,6 +29,7 @@ namespace PLImg_V2
     public delegate void TransScanStatus(); 
     public delegate void TransSplitImgArr(Image<Gray, Byte> img,int lineNum,int unitNum);
     public delegate void TransLineBuffNum(int linenum, int unitnum);
+    public delegate void TransFeedBackPos(double[] XYZPos);
 
     public class MainModule
     {
@@ -45,6 +46,7 @@ namespace PLImg_V2
         //public event TransScanStatus    evtFullScanStart      ;
         public event TransScanStatus    evtFullScanCom        ;
         public event TransDoubleNumber  evtVarianceValue      ;
+        public event TransFeedBackPos   evtFeedbackPos        ;
 
         Timer                 ProfileTimer    ;
         MessageBasedSession   MbSession       ;
@@ -72,6 +74,11 @@ namespace PLImg_V2
         int                   LineCount       ;
         int                   UnitCount       ;
         int                   ScanNum         ;
+        double[]              FeedBackPos     ;
+        int NextXPos;
+        ScanDirection         ScanDirec       ;
+        int StartP;
+        int EndP;
 
         string ImgBasePath = "C:\\ImgFullScanTemp\\" ;
 
@@ -88,6 +95,7 @@ namespace PLImg_V2
             CreateDeviceMana(DalsaConnect);
             TimerSetting();
             StatusFullScan = FullScanState.Wait;
+            FeedBackPos = new double[3];
         }
 
 
@@ -103,18 +111,34 @@ namespace PLImg_V2
         {
             byte[] buffData = GrabM.DataTransFromBuffer(DalsaMemObj.Buffers);
             evtRealimg(Buff2Img(buffData, 1));
+            ScanDirec = ScanDirection.Forward;
 
             #region New
             switch (StatusFullScan) {
                 case FullScanState.Stop:
-                    evtFullScanCom();
+                    evtFullScanCom(); // Not Use
                     StatusFullScan = FullScanState.Wait;
                     break;
 
                 case FullScanState.Pause:
                     //XYMoveAbsPos(DataFullScan.PosXStart,DataFullScan.PosYStart*(LineCount+1));
-                    XYWait2Arrive( DataFullScan.PosXStart, DataFullScan.PosYStart * (LineCount + 1) );
+                    AcsXYZControl.YMove( 3 );
+                    System.Threading.Thread.Sleep( 3000 ); // Need Pos Check Later //sjw
+                    if ( ScanDirec == ScanDirection.Forward )
+                    {
+                        ScanDirec = ScanDirection.Back;
+                        NextXPos = StartP;
+                    }
+                    else
+                    {
+                        ScanDirec = ScanDirection.Forward;
+                        NextXPos = EndP;
+                    }
+                
+
+                    AcsXYZControl.XMove( NextXPos );
                     StatusFullScan = FullScanState.Start;
+                    
                     break;
 
                 case FullScanState.Start:
@@ -176,25 +200,34 @@ namespace PLImg_V2
         }
         #endregion
 
+        #region Feedback
+        public double[] GetFeedbackPos()
+        {
+            return AcsXYZControl.FeedbackPos();
+        }
+        #endregion
+
         #region Scanning
+        void SetStartEnd( int startposX , int endposX )
+        {
+            StartP = startposX;
+            EndP = endposX;
+        }
+
         public async void StartLineScan(int startposX, int endposX , int speed)
         {
             DataFullScan.LineLimit = 0;
             InitCount();
-
-            string dirTempPath = String.Format(ImgBasePath + DateTime.Now.ToString("u"));
-            CheckAndCreateFolder cacf = new CheckAndCreateFolder(dirTempPath);
-            GrabM.SetDirPath(dirTempPath);
-
+            SetDir();
             evtLineScanStart();
             await Task.Run(()=> {
-                LlineScanInit( startposX );
+                //LlineScanInit( startposX );
                 ImgSrcByte = new byte[0];
                 CheckGrabStatus();
                 AcsXYZControl.XMove( endposX );
                 StatusFullScan = FullScanState.Start;
-                System.Threading.Thread.Sleep( 5000 ); //여기서 목표 위치 확인하고 도착시 스캔 끝내기 
-                StatusFullScan = FullScanState.Stop;
+                //System.Threading.Thread.Sleep( 5000 ); //여기서 목표 위치 확인하고 도착시 스캔 끝내기 
+                //StatusFullScan = FullScanState.Stop;
             });
         }
 
@@ -202,18 +235,22 @@ namespace PLImg_V2
         {
             DataFullScan.LineLimit = 3;
             InitCount();
-
-            string dirTempPath = String.Format(ImgBasePath + DateTime.Now.ToString("MM/dd/HH/mm/ss"));
-            CheckAndCreateFolder cacf = new CheckAndCreateFolder(dirTempPath);
-            cacf.SettingFolder(dirTempPath);
-            GrabM.SetDirPath(dirTempPath);
+            SetDir();
             await Task.Run(() => {
-                ScanInit(startposX, startposX, endposX, xSpeed);
+                //ScanInit(startposX, startposX, endposX, xSpeed);
                 ImgSrcByte = new byte[0];
                 CheckGrabStatus();
-
+                AcsXYZControl.XMove( endposX );
                 BeginScanning(endposX, startposY);
             });
+        }
+
+        void SetDir()
+        {
+            string dirTempPath = String.Format(ImgBasePath + DateTime.Now.ToString("MM/dd/HH/mm/ss"));
+            CheckAndCreateFolder cacf = new CheckAndCreateFolder(dirTempPath);
+            cacf.SettingFolder( dirTempPath );
+            GrabM.SetDirPath( dirTempPath );
         }
 
         void LlineScanInit( int startposX )
@@ -246,9 +283,9 @@ namespace PLImg_V2
 
         void BeginScanning(int posX,int posY)
         {
-            XYStageControler.XYMoveAbsPos(posX, posY);
+            //XYStageControler.XYMoveAbsPos(posX, posY);
             StatusFullScan = FullScanState.Start;
-            XYStageControler.XYWait2ArriveEpsilon(posX, posY, 80);
+            //XYStageControler.XYWait2ArriveEpsilon(posX, posY, 80);
         }
 
         #endregion
@@ -425,6 +462,11 @@ namespace PLImg_V2
         public void XYStageInit(int port)
         {
             AcsXYZControl.Connect( port );
+
+            Task.Run( () => {
+                while ( true )
+                { evtFeedbackPos( AcsXYZControl.FeedbackPos() ); };
+            });
             //XYStageControler = new DctXYStageControl();
             //ZStageControler = new DctZStageControl();
             //if (!XYStageControler.XYStageConnect(port.ToString())) { XYStageControler = new DumyDctXYStageControl(); }

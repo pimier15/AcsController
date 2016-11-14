@@ -76,6 +76,14 @@ namespace PLImg_V2
             Ch.SetVelocityImm( Axis["Z"], zspeed, Ch.ACSC_ASYNCHRONOUS, ref pWait );
         }
 
+        public double[] FeedbackPos()
+        {
+            double[] output = new double[3];
+            output[0] = Math.Round( Ch.GetFPosition(Axis["X"], Ch.ACSC_SYNCHRONOUS, ref pWait) , 2 );
+            output[1] = Math.Round( Ch.GetFPosition(Axis["Y"], Ch.ACSC_SYNCHRONOUS, ref pWait) , 2 );
+            //double FeedbackPosZ = Math.Round( Ch.GetFPosition(Axis["Z"], Ch.ACSC_SYNCHRONOUS, ref pWait); , 2 );
+            return output;
+        }
 
 
     }
