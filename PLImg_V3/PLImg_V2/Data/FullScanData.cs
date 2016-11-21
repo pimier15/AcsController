@@ -18,7 +18,9 @@ namespace PLImg_V2
         public readonly int OneUnitBuffNum = 12;
         public readonly int OneLineBuffNum = 48;
         public readonly int BuffLimit = 11;
-        public readonly int UnitLimit = 3;
+        public readonly int UnitLimit = 0;
         public int LineLimit = 3;
+
+        public int ScanSpeed = 1;
     }
 }

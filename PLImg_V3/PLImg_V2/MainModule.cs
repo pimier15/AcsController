@@ -58,22 +58,14 @@ namespace PLImg_V2
         GrabStatus            StatusGrab      ;
         FullScanState         StatusFullScan  ;
         ICameraSetting        CameraSet       ;
-        IXYStageOrder         XYStageControler;
-        IZStageOrder          ZStageControler ;
         ISigmakokiStageUnit   RStageControler ;
         AcsContol             AcsXYZControl   ;
 
         Image<Gray, byte>     CurrentImg      ;
         byte[]                ImgSrcByte      ;
-        byte[][]              ImgSrcByteArray ;
-        bool                  ScanStart       ;
-        bool                  ScanStop        ;
-        List<byte[]>          GrabedBuffPool  ;
-        bool                  IsPaused        ; 
         int                   BuffCount       ;
         int                   LineCount       ;
         int                   UnitCount       ;
-        int                   ScanNum         ;
         double[]              FeedBackPos     ;
         int NextXPos;
         ScanDirection         ScanDirec       ;
@@ -96,6 +88,7 @@ namespace PLImg_V2
             TimerSetting();
             StatusFullScan = FullScanState.Wait;
             FeedBackPos = new double[3];
+            
         }
 
 
@@ -116,14 +109,16 @@ namespace PLImg_V2
             #region New
             switch (StatusFullScan) {
                 case FullScanState.Stop:
-                    evtFullScanCom(); // Not Use
                     StatusFullScan = FullScanState.Wait;
+                    Freeze();
+                    evtFullScanCom();
                     break;
 
                 case FullScanState.Pause:
-                    //XYMoveAbsPos(DataFullScan.PosXStart,DataFullScan.PosYStart*(LineCount+1));
+                    double currentYPos = AcsXYZControl.GetMotorFPos()[1];
                     AcsXYZControl.YMove( 3 );
-                    System.Threading.Thread.Sleep( 3000 ); // Need Pos Check Later //sjw
+                    AcsXYZControl.Wait2ArriveEpsilon( "Y", currentYPos + 3 , 0.02);
+                    System.Threading.Thread.Sleep( 100 ); // Need Pos Check Later //sjw
                     if ( ScanDirec == ScanDirection.Forward )
                     {
                         ScanDirec = ScanDirection.Back;
@@ -187,7 +182,7 @@ namespace PLImg_V2
         {
             byte[] buffOneLineDatga = GrabM.DataTransFromBufferOneLine(DalsaMemObj.Buffers);
             evtByteArrOneLine(ArrayControl.Slice(buffOneLineDatga, 0, 6143));
-            evtVarianceValue(AFMeasrue.CalcAFV (ArrayControl.Slice(buffOneLineDatga, 0, 6143)) );
+            evtVarianceValue(AFMeasrue.CalcAFV (ArrayControl.Slice(buffOneLineDatga, 0, 12243)) );
         }
 
         async void SaveLineDat(byte[] inputArr, int buffNum, int scanNum)
@@ -201,9 +196,13 @@ namespace PLImg_V2
         #endregion
 
         #region Feedback
-        public double[] GetFeedbackPos()
+        public void GetFeedbackPos()
         {
-            return AcsXYZControl.FeedbackPos();
+            while ( true )
+            {
+                evtFeedbackPos( AcsXYZControl.GetMotorFPos() );
+                System.Threading.Thread.Sleep( 50 );
+            }
         }
         #endregion
 
@@ -216,19 +215,24 @@ namespace PLImg_V2
 
         public async void StartLineScan(int startposX, int endposX , int speed)
         {
+            ReadyLineScan( startposX );
             DataFullScan.LineLimit = 0;
             InitCount();
             SetDir();
             evtLineScanStart();
             await Task.Run(()=> {
-                //LlineScanInit( startposX );
                 ImgSrcByte = new byte[0];
-                CheckGrabStatus();
                 AcsXYZControl.XMove( endposX );
                 StatusFullScan = FullScanState.Start;
-                //System.Threading.Thread.Sleep( 5000 ); //여기서 목표 위치 확인하고 도착시 스캔 끝내기 
-                //StatusFullScan = FullScanState.Stop;
             });
+        }
+
+        public void ReadyLineScan( int startpos )
+        {
+            AcsXYZControl.SetXSpeed( 200 );
+            AcsXYZControl.XMove( startpos );
+            AcsXYZControl.Wait2ArriveEpsilon( "X", startpos, 1.0 );
+            AcsXYZControl.SetXSpeed( DataFullScan.ScanSpeed );
         }
 
         public async void StartFullScan(int startposX, int startposY,int endposX, int xSpeed)
@@ -239,7 +243,7 @@ namespace PLImg_V2
             await Task.Run(() => {
                 //ScanInit(startposX, startposX, endposX, xSpeed);
                 ImgSrcByte = new byte[0];
-                CheckGrabStatus();
+                //CheckGrabStatus();
                 AcsXYZControl.XMove( endposX );
                 BeginScanning(endposX, startposY);
             });
@@ -330,18 +334,34 @@ namespace PLImg_V2
         #endregion
 
         #region XYStageOrder
+        public void EnableStage( ) { AcsXYZControl.EnableMotor(); }
+
+        public void DisableStage( int axis ) {
+                AcsXYZControl.DisableMotor( axis );
+        }
+
         public void XYOrigin()
         {
         }
 
-        public void XMoveAbsPos(int posX)
+        public void XMoveAbsPos(int posX )
         {
+            AcsXYZControl.SetXSpeed( 200 );
             AcsXYZControl.XMove( posX );
+            AcsXYZControl.Wait2ArriveEpsilon( "X", posX, 1.0 );
+            AcsXYZControl.SetXSpeed( DataFullScan.ScanSpeed );
+
+        }
+
+        public void disz( ) {
+            AcsXYZControl.DisZ();
         }
 
         public void YMoveAbsPos(int posY )
         {
+            AcsXYZControl.SetYSpeed( 200 );
             AcsXYZControl.YMove( posY );
+            AcsXYZControl.Wait2ArriveEpsilon( "Y", posY, 1.0 );
         }
 
         public void XYWait2Arrive(int targetPosX,int targetPosY)
@@ -352,6 +372,14 @@ namespace PLImg_V2
         public void XYSetSpeed(int speedX, int speedY)
         {
             AcsXYZControl.SetSpeed( speedX, speedY , 100 );
+        }
+
+        public void HaltStage( ) {
+            AcsXYZControl.Halt();
+        }
+
+        public void Home( ) {
+            AcsXYZControl.Home();
         }
 
         #endregion
@@ -391,6 +419,7 @@ namespace PLImg_V2
             AcsXYZControl.SetSpeed(speedX,speedY,speedZ);
         }
 
+        public void Buffclear( ) { }
 
         #endregion
 
@@ -459,18 +488,15 @@ namespace PLImg_V2
             }
         }
 
-        public void XYStageInit(int port)
+        public void XYZStageInit(string addIP)
         {
-            AcsXYZControl.Connect( port );
+            AcsXYZControl.Connect( addIP );
+            AcsXYZControl.Home();
+        }
 
-            Task.Run( () => {
-                while ( true )
-                { evtFeedbackPos( AcsXYZControl.FeedbackPos() ); };
-            });
-            //XYStageControler = new DctXYStageControl();
-            //ZStageControler = new DctZStageControl();
-            //if (!XYStageControler.XYStageConnect(port.ToString())) { XYStageControler = new DumyDctXYStageControl(); }
-            //if (!ZStageControler.ZStageConnect(port.ToString())) { ZStageControler = new DumyDctZStageControl(); }
+        public void XYZStageInitCom( string comport ) {
+            AcsXYZControl.ConnectCom( comport );
+            AcsXYZControl.Home();
         }
 
         public void RStageInit( int port )
@@ -491,6 +517,10 @@ namespace PLImg_V2
             UnitCount = 0;
             LineCount = 0;
         }
+
+        public void DisposeStage( ) {
+            AcsXYZControl.Dispose();
+        }
         #endregion
 
         #region Save
@@ -503,9 +533,12 @@ namespace PLImg_V2
                 {
                     for ( int j = 0; j < imgbox.GetLength( 1 ); j++ )
                     {
-                        string temp = i.ToString( "D2" ) + "_"+j.ToString( "D3" );
-                        string outpath = System.IO.Path.Combine( savepath, temp );
-                        imgbox[i, j].Image.Save( String.Format( outpath + ".bmp" ) );
+                        if ( imgbox[i, j].Image != null )
+                        {
+                            string temp = i.ToString( "D2" ) + "_"+j.ToString( "D3" );
+                            string outpath = System.IO.Path.Combine( savepath, temp );
+                            imgbox[i, j].Image.Save( String.Format( outpath + ".bmp" ) );
+                        }
                     }
                 }
 

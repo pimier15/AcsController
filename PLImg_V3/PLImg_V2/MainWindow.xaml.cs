@@ -29,14 +29,21 @@ using LiveCharts.Wpf;
 
 namespace PLImg_V2
 {
+    enum StageEnableState {
+        Enabled,
+        Disabled
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        const string CamPath     = "ASRL1::INSTR";
-        const int XYStagePort    = 3;
-        const int RStagePort     = 6;
+        string CamPath     ;
+        string XYStagePort    ;
+        string ControllerIP    ;
+        int RStagePort     ;
+        bool FeedBackOn = false;
 
         MainModule ModMain;
         public SeriesCollection seriesbox { get; set; }
@@ -45,10 +52,12 @@ namespace PLImg_V2
         List<int> YValue;
         ImageBox[,] ImgBoxArr;
         IDisplayEmgu ModDisplay;
+        StageEnableState StageState; 
 
         public MainWindow()
         {
             InitializeComponent();
+            InitConnectPort();
             InitMainMod();
             InitChart();
             InitImgBox();
@@ -108,8 +117,20 @@ namespace PLImg_V2
         #endregion
 
         #region Init
+        void InitConnectPort( )
+        {
+            ConnectionData condata = new ConnectionData();
+            CamPath     = condata.CameraPath    ;
+            XYStagePort = condata.DctStagePort  ;
+            ControllerIP = condata.ControllerIP  ;
+            RStagePort  = condata.RStage        ;
+        }
+
+
         void InitMainMod( )
         {
+            StageState = StageEnableState.Enabled;
+
             ModMain = new MainModule();
             ModMain.evtRealimg += new TransImgArr( DisplayRealTime );
             ModMain.evtByteArrOneLine += new TransbyteArr( DisplayRealTimeProfile );
@@ -124,7 +145,8 @@ namespace PLImg_V2
             imgboxReal.SizeMode = PictureBoxSizeMode.StretchImage;
 
             ModMain.ConnectVISA2Cam( CamPath );
-            ModMain.XYStageInit( XYStagePort );
+            //ModMain.XYZStageInit( ControllerIP );
+            ModMain.XYZStageInitCom( XYStagePort );
             ModMain.RStageInit( RStagePort );
 
             InitViewWin();
@@ -173,25 +195,26 @@ namespace PLImg_V2
 
         void InitViewWin( )
         {
-            nudEndXPos.Value = 0;
-            nudStartXPos.Value = 100;
+            nudEndXPos.Value = 80;
+            nudStartXPos.Value = 120;
             nudStartYPos.Value = 0;
             nudEndYPos.Value = 0;
-            nudXSpeed.Value = 100;
-            nudYSpeed.Value = 100;
+            nudXSpeed.Value = 50;
+            nudYSpeed.Value = 50;
             nudExtime.Value = 400;
             nudlinerate.Value = 4000;
             nudRSpeed.Value = 200;
-            nudGoXPos.Value = 50;
+            nudGoXPos.Value = 100;
             nudGoYPos.Value = 50;
-            nudZSpeed.Value = 50;
+            nudGoZPos.Value = 27.9;
+            nudZSpeed.Value = 10;
         }
 
         void DisplayPos(double[] inputPos)
         {
-            lblXpos.Content = inputPos[0].ToString();
-            lblYpos.Content = inputPos[1].ToString();
-            //lblZpos.Content = inputPos[0].ToString();
+            Task.Run( ( ) => lblXpos.BeginInvoke( (Action)(( ) => lblXpos.Content = inputPos[0].ToString()) ) );
+            Task.Run( ( ) => lblYpos.BeginInvoke( (Action)(( ) => lblYpos.Content = inputPos[1].ToString()) ) );
+            //Task.Run( ( ) => lblZpos.BeginInvoke( (Action)(( ) => lblYpos.Content = inputPos[2].ToString()) ) );
         }
         #endregion
 
@@ -271,56 +294,85 @@ namespace PLImg_V2
             }
             catch ( Exception )
             {
-                nudXSpeed.Value = 0;
+                nudXSpeed.Value = 2;
                 nudYSpeed.Value = 0;
                 nudZSpeed.Value = 0;
             }
         }
 
+        //common
+        private void btnOrigin_Click( object sender, RoutedEventArgs e ) {
+            ModMain.Home();
+        }
+
+        private void btnEnable_Click( object sender, RoutedEventArgs e ) {
+            ModMain.EnableStage();
+            StageState = StageEnableState.Enabled;
+        }
+
+        private void btnDisable_Click( object sender, RoutedEventArgs e ) {
+            ModMain.DisableStage(0);
+            ModMain.DisableStage(1);
+            ModMain.DisableStage(2);
+            StageState = StageEnableState.Disabled;
+        }
+        private void btnXYBuffClear_Click( object sender, RoutedEventArgs e ) {
+            ModMain.Buffclear();
+        }
+
+        private void btnHalt_Click( object sender, RoutedEventArgs e ) {
+            ModMain.HaltStage();
+        }
+
+        private void nudXSpeed_KeyUp( object sender, System.Windows.Input.KeyEventArgs e ) {
+            ModMain.SetSpeed( (int)nudXSpeed.Value, (int)nudYSpeed.Value, (int)nudZSpeed.Value );
+        }
+
+        private void nudYSpeed_KeyUp( object sender, System.Windows.Input.KeyEventArgs e ) {
+            ModMain.SetSpeed( (int)nudXSpeed.Value, (int)nudYSpeed.Value, (int)nudZSpeed.Value );
+        }
+
+        private void nudZSpeed_KeyUp( object sender, System.Windows.Input.KeyEventArgs e ) {
+            ModMain.SetSpeed( (int)nudXSpeed.Value, (int)nudYSpeed.Value, (int)nudZSpeed.Value );
+        }
+
+
         // XYStage //
         private void btnYMove_Click( object sender, RoutedEventArgs e )
         {
-            ModMain.YMoveAbsPos( (int)nudGoYPos.Value );
+            if ( StageState == StageEnableState.Enabled )
+            {
+                ModMain.YMoveAbsPos( (int)nudGoYPos.Value );
+
+                if ( !FeedBackOn )
+                {
+                    Task.Run( ( ) => ModMain.GetFeedbackPos() );
+                    
+                    FeedBackOn = true;
+                }
+
+            }
         }
 
         private void btnXMove_Click( object sender, RoutedEventArgs e )
         {
-            ModMain.XMoveAbsPos( (int)nudGoXPos.Value );
+            if ( StageState == StageEnableState.Enabled )
+            {
+                ModMain.XMoveAbsPos( (int)nudGoXPos.Value );
+                if ( !FeedBackOn )
+                {
+                    Task.Run( ( ) => ModMain.GetFeedbackPos() );
+                    FeedBackOn = true;
+                }
+            }
         }
 
-        private void btnOrigin_Click( object sender, RoutedEventArgs e )
-        {
-            ModMain.XYOrigin();
-        }
-        private void nudXSpeed_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double?> e )
-        {
-            SetSpeedXYZ();
-        }
-        private void nudYSpeed_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double?> e )
-        {
-            SetSpeedXYZ();
-        }
-        private void btnForceStop_Click( object sender, RoutedEventArgs e )
-        {
-
-        }
+        
 
         // ZStage //
         private void btnZMove_Click( object sender, RoutedEventArgs e )
         {
-            ModMain.ZMoveAbsPos( (int)nudGoZPos.Value );
-        }
-        private void nudZSpeed_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double?> e )
-        {
-            SetSpeedXYZ();
-        }
-        private void btnZOrigin_Click( object sender, RoutedEventArgs e )
-        {
-
-        }
-        private void btnZForceStop_Click( object sender, RoutedEventArgs e )
-        {
-
+            if(StageState == StageEnableState.Enabled) ModMain.ZMoveAbsPos( (int)nudGoZPos.Value );
         }
 
         // R Stage //
@@ -340,6 +392,9 @@ namespace PLImg_V2
         {
             
         }
+
+
+
         #endregion
 
         #endregion
@@ -405,6 +460,27 @@ namespace PLImg_V2
         private void nudlinerate_KeyUp( object sender, System.Windows.Input.KeyEventArgs e )
         {
             ModMain.SetLineRate( (int)nudlinerate.Value );
+        }
+
+
+        private void nudRSpeed_KeyUp( object sender, System.Windows.Input.KeyEventArgs e ) {
+            
+        }
+
+        private void MetroWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e ) {
+            ModMain.DisposeStage();
+        }
+
+        private void btnXDisable_Click( object sender, RoutedEventArgs e ) {
+            ModMain.DisableStage( 0 );
+        }
+
+        private void btnYDisable_Click( object sender, RoutedEventArgs e ) {
+            ModMain.DisableStage( 1 );
+        }
+
+        private void btnZDisable_Click( object sender, RoutedEventArgs e ) {
+            ModMain.disz();
         }
     }
 }
