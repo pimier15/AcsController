@@ -183,6 +183,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutoFocus.cs" />
     <Compile Include="Data\ConnectionData.cs" />
     <Compile Include="Stage\Dct\AcsContol.cs" />
     <Compile Include="Data\FullScanData.cs" />
