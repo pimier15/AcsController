@@ -32,6 +32,7 @@ namespace PLImg_V2
     enum StageEnableState {
         Enabled,
         Disabled
+        
     }
 
     /// <summary>
@@ -52,7 +53,12 @@ namespace PLImg_V2
         List<int> YValue;
         ImageBox[,] ImgBoxArr;
         IDisplayEmgu ModDisplay;
-        StageEnableState StageState; 
+        StageEnableState XStageState;
+        StageEnableState YStageState;
+        StageEnableState ZStageState;
+        byte[] SavesLineData;
+
+        Timer focustimer; 
 
         public MainWindow()
         {
@@ -63,12 +69,16 @@ namespace PLImg_V2
             InitImgBox();
             SetImgBoxStretch();
             DataContext = this;
+
+            focustimer = new Timer();
+            focustimer.Interval = 1500;
+            focustimer.Tick += new EventHandler( FocusTimerMethod );
         }
 
         #region Display
         void DisplayAF(double input)
         {
-            lblAFV.Content = input.ToString();
+            lblAFV.Content = input.ToString("N4");
         }
 
         void DisplayRealTime(Image<Gray, byte> img)
@@ -82,9 +92,73 @@ namespace PLImg_V2
             ModDisplay = new Display();
         }
 
-        void DisplayRealTimeProfile(byte[] input)
+        bool auto = false;
+        bool stop = true;
+        async void DisplayRealTimeProfile(byte[] input)
         {
-            AsySetLineValue(Arr2List(input), seriesbox);
+            await Task.Run(()=>(SavesLineData = input)) ;
+            //AsySetLineValue(Arr2List(input), seriesbox);
+        }
+
+        // --//
+        double error; 
+        int     now      ; 
+        int     pastbest ; 
+        double apa       ; 
+        double deff      ; 
+        double initnum   ; 
+        double step      ; 
+        double pastpos   ; 
+        double pastAction; 
+        double nowAction ; 
+        double GoodAction;
+        int      counter ;
+
+        void initval( ) {
+            error = 100;
+            now = 0;
+            pastbest = 0;
+            apa = 1;
+            deff = 0;
+            initnum = 1;
+            step = 0;
+            pastpos = 29;
+
+            pastAction = 0;
+            nowAction = 0;
+            GoodAction = 1;
+            counter = 0;
+        }
+        // --- //
+        async void FocusTimerMethod( object ob, EventArgs e ) {
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+
+            now = 0;
+            for ( int i = 0; i < SavesLineData.GetLength( 0 ); i++ )
+            {
+                if ( SavesLineData[i] > 40 ) now++;
+            }
+            error = now - pastbest;
+
+            if ( now > pastbest )
+            {
+                pastbest = now;
+            }
+            else
+            {
+                GoodAction = apa < 0.4 ? 0.4 * GoodAction * (-1) : apa * GoodAction * (-1);
+                apa = 0.97 * apa;
+            }
+
+            if ( Math.Abs( GoodAction ) < 0.001 ) {
+                stop = true;
+                Mouse.OverrideCursor = null;
+                focustimer.Stop();
+            }
+            ModMain.ZMoveRelPos( GoodAction );
+            await Task.Delay( 2300 );
+            Console.WriteLine( "Current Direction and Step : " + $"{GoodAction.ToString( "N2" )}" + "|| Count : " + $"{counter}" );
+            counter++;
         }
 
         void DisplayBuffNumber(int num)
@@ -126,26 +200,25 @@ namespace PLImg_V2
             RStagePort  = condata.RStage        ;
         }
 
-
         void InitMainMod( )
         {
-            StageState = StageEnableState.Enabled;
+            XStageState = StageEnableState.Enabled;
+            YStageState = StageEnableState.Enabled;
+            ZStageState = StageEnableState.Enabled;
 
             ModMain = new MainModule();
-            ModMain.evtRealimg += new TransImgArr( DisplayRealTime );
-            ModMain.evtByteArrOneLine += new TransbyteArr( DisplayRealTimeProfile );
-            ModMain.evtVarianceValue += new TransDoubleNumber( DisplayAF );
-            ModMain.evtBuffNum += new TransNumber( DisplayBuffNumber );
-            ModMain.evtScanImgOnGoing += new TransImgArr( DisplayScaned );
-            ModMain.evtLineScanStart += new TransScanStatus( SetImgBoxStretch );
-            ModMain.evtLineScanCom += new TransScanStatus( SetImgBoxFit );
-            ModMain.evtFScanImgOnGoing += new TransSplitImgArr( DisplayFullScanImg );
-            ModMain.evtFeedbackPos += new TransFeedBackPos( DisplayPos );
+            ModMain.evtRealimg          += new TransImgArr( DisplayRealTime );
+            ModMain.evtByteArrOneLine   += new TransbyteArr( DisplayRealTimeProfile );
+            ModMain.evtVarianceValue    += new TransDoubleNumber( DisplayAF );
+            ModMain.evtFScanImgOnGoing  += new TransSplitImgArr( DisplayFullScanImg );
+            ModMain.evtFeedbackPos      += new TransFeedBackPos( DisplayPos );
+            ModMain.evtScanStart        += new TransScanStatus( ScanStart );
+            ModMain.evtScanEnd          += new TransScanStatus( ScanEnd );
 
             imgboxReal.SizeMode = PictureBoxSizeMode.StretchImage;
 
-            ModMain.ConnectVISA2Cam( CamPath );
-            //ModMain.XYZStageInit( ControllerIP );
+            //ModMain.ConnectVISA2Cam( CamPath );
+            ModMain.XYZStageInit( ControllerIP );
             ModMain.XYZStageInitCom( XYStagePort );
             ModMain.RStageInit( RStagePort );
 
@@ -195,8 +268,8 @@ namespace PLImg_V2
 
         void InitViewWin( )
         {
-            nudEndXPos.Value = 80;
-            nudStartXPos.Value = 120;
+            nudEndXPos.Value = 85;
+            nudStartXPos.Value = 138;
             nudStartYPos.Value = 0;
             nudEndYPos.Value = 0;
             nudXSpeed.Value = 50;
@@ -206,15 +279,15 @@ namespace PLImg_V2
             nudRSpeed.Value = 200;
             nudGoXPos.Value = 100;
             nudGoYPos.Value = 50;
-            nudGoZPos.Value = 27.9;
+            nudGoZPos.Value = 28.41;
             nudZSpeed.Value = 10;
         }
 
         void DisplayPos(double[] inputPos)
         {
-            Task.Run( ( ) => lblXpos.BeginInvoke( (Action)(( ) => lblXpos.Content = inputPos[0].ToString()) ) );
-            Task.Run( ( ) => lblYpos.BeginInvoke( (Action)(( ) => lblYpos.Content = inputPos[1].ToString()) ) );
-            //Task.Run( ( ) => lblZpos.BeginInvoke( (Action)(( ) => lblYpos.Content = inputPos[2].ToString()) ) );
+            Task.Run( ( ) => lblXpos.BeginInvoke( (Action)(( ) => lblXpos.Content = inputPos[0].ToString("N4")) ) );
+            Task.Run( ( ) => lblYpos.BeginInvoke( (Action)(( ) => lblYpos.Content = inputPos[1].ToString("N4")) ) );
+            Task.Run( ( ) => lblZpos.BeginInvoke( (Action)(( ) => lblZpos.Content = inputPos[2].ToString("N4")) ) );
         }
         #endregion
 
@@ -239,6 +312,9 @@ namespace PLImg_V2
             ClearImgBox();
             ModMain.StartFullScan((int)nudStartXPos.Value, (int)nudStartYPos.Value,(int)nudEndXPos.Value,(int)nudXSpeed.Value);
         }
+
+        void ScanStart( ) { Mouse.OverrideCursor = Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait; ; }
+        void ScanEnd( ) { Mouse.OverrideCursor = null; }
 
         #region Camera
         private void btnGrap_Click(object sender, RoutedEventArgs e)
@@ -304,18 +380,7 @@ namespace PLImg_V2
         private void btnOrigin_Click( object sender, RoutedEventArgs e ) {
             ModMain.Home();
         }
-
-        private void btnEnable_Click( object sender, RoutedEventArgs e ) {
-            ModMain.EnableStage();
-            StageState = StageEnableState.Enabled;
-        }
-
-        private void btnDisable_Click( object sender, RoutedEventArgs e ) {
-            ModMain.DisableStage(0);
-            ModMain.DisableStage(1);
-            ModMain.DisableStage(2);
-            StageState = StageEnableState.Disabled;
-        }
+       
         private void btnXYBuffClear_Click( object sender, RoutedEventArgs e ) {
             ModMain.Buffclear();
         }
@@ -340,7 +405,7 @@ namespace PLImg_V2
         // XYStage //
         private void btnYMove_Click( object sender, RoutedEventArgs e )
         {
-            if ( StageState == StageEnableState.Enabled )
+            if ( YStageState == StageEnableState.Enabled )
             {
                 ModMain.YMoveAbsPos( (int)nudGoYPos.Value );
 
@@ -356,7 +421,7 @@ namespace PLImg_V2
 
         private void btnXMove_Click( object sender, RoutedEventArgs e )
         {
-            if ( StageState == StageEnableState.Enabled )
+            if ( XStageState == StageEnableState.Enabled )
             {
                 ModMain.XMoveAbsPos( (int)nudGoXPos.Value );
                 if ( !FeedBackOn )
@@ -372,13 +437,15 @@ namespace PLImg_V2
         // ZStage //
         private void btnZMove_Click( object sender, RoutedEventArgs e )
         {
-            if(StageState == StageEnableState.Enabled) ModMain.ZMoveAbsPos( (int)nudGoZPos.Value );
+            if(ZStageState == StageEnableState.Enabled) ModMain.ZMoveAbsPos( (double)nudGoZPos.Value );
         }
 
         // R Stage //
         private void btnRMove_Click( object sender, RoutedEventArgs e )
         {
-            ModMain.RMoveAbsPos( (int)nudGoRPos.Value );
+            int pulse = (int)nudGoRPos.Value * 400;
+
+            ModMain.RMoveAbsPos( pulse );
         }
         private void nudRSpeed_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double?> e )
         {
@@ -468,19 +535,61 @@ namespace PLImg_V2
         }
 
         private void MetroWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e ) {
-            ModMain.DisposeStage();
-        }
-
-        private void btnXDisable_Click( object sender, RoutedEventArgs e ) {
             ModMain.DisableStage( 0 );
-        }
-
-        private void btnYDisable_Click( object sender, RoutedEventArgs e ) {
             ModMain.DisableStage( 1 );
+            ModMain.DisableStage( 2 );
         }
 
         private void btnZDisable_Click( object sender, RoutedEventArgs e ) {
-            ModMain.disz();
+            //ModMain.disz();
+            stop = true;
+            Mouse.OverrideCursor = null;
+            focustimer.Stop();
+            
+        }
+
+        private void btnFocus_Click( object sender, RoutedEventArgs e ) {
+            auto = true;
+            stop = false;
+            initval();
+            focustimer.Start();
+        }
+
+
+        #region Motor Enable / Disable
+        private void ckbXDisa_Checked( object sender, RoutedEventArgs e ) {
+            ModMain.DisableStage( 0 );
+            XStageState = StageEnableState.Disabled;
+        }
+
+        private void ckbYDisa_Checked( object sender, RoutedEventArgs e ) {
+            ModMain.DisableStage( 1 );
+            YStageState = StageEnableState.Disabled;
+        }
+
+        private void ckbZDisa_Checked( object sender, RoutedEventArgs e ) {
+            ModMain.DisableStage( 2 );
+            ZStageState = StageEnableState.Disabled;
+        }
+
+        private void ckbZDisa_Unchecked( object sender, RoutedEventArgs e ) {
+            ModMain.EnableStage( 2 );
+            ZStageState = StageEnableState.Enabled;
+        }
+
+        private void ckbYDisa_Unchecked( object sender, RoutedEventArgs e ) {
+            ModMain.EnableStage( 1 );
+            YStageState = StageEnableState.Enabled;
+        }
+
+        private void ckbXDisa_Unchecked( object sender, RoutedEventArgs e ) {
+            ModMain.EnableStage( 0 );
+            XStageState = StageEnableState.Enabled;
+        }
+        #endregion
+
+        private void btnTest_Click( object sender, RoutedEventArgs e ) {
+            ModMain.ZMoveRelPos( 0.01 );
         }
     }
 }

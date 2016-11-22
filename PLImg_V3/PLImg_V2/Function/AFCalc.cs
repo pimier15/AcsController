@@ -20,14 +20,9 @@ namespace PLImg_V2
             for (int i = 2; i < input.Length-2; i++)
             {
                 contrastArr[i] = (double)(Math.Abs(input[i] - input[i - 1]) + Math.Abs(input[i] - input[i + 1])/ input.Length);
-                    if (i == input.Length - 3)
-                    {
-                        Console.WriteLine(2.ToString());
-                    }
             }
 
             output = Measures.Variance(contrastArr);
-            Console.WriteLine(output.ToString());
             return output;
 
             }

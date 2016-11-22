@@ -28,6 +28,7 @@ namespace PLImg_V2
             GCHandle outputAddr = GCHandle.Alloc( output, GCHandleType.Pinned); // output 의 주소 만듬
             IntPtr pointer = outputAddr.AddrOfPinnedObject(); // 
             buff.ReadRect(0,0,buff.Width,buff.Height, pointer);
+            
             Marshal.Copy(pointer, output, 0, output.Length);
             outputAddr.Free();
             return output;
@@ -35,10 +36,12 @@ namespace PLImg_V2
 
         public byte[] DataTransFromBufferOneLine(SapBuffer buff)
         {
-            byte[] output = new byte[buff.Width*2];
+            byte[] output = new byte[buff.Width];
             GCHandle outputAddr = GCHandle.Alloc(output, GCHandleType.Pinned); // output 의 GC주소 만듬
             IntPtr pointer = outputAddr.AddrOfPinnedObject();
-            buff.ReadRect(0, 0, buff.Width, 2, pointer);     // 이걸로 안하면 무조건 중간에 멈춘다.
+            //buff.ReadRect(0, 0, buff.Width, 2, pointer);     // 이걸로 안하면 무조건 중간에 멈춘다.
+            int readnum = 0;
+            buff.ReadLine( 0, 0, 12287, 0, pointer, out readnum );
             Marshal.Copy(pointer, output, 0, output.Length); // Pointer에서 가리키는 첫번쨰 메모리 주소에서부터 Length 만큼 카피를 한다.
             outputAddr.Free();
             return output;

@@ -124,46 +124,43 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
                         </Grid.RowDefinitions>
                         
-                        <Button x:Name ="btnOrigin"      Grid.Row="0" Grid.Column="0" Content="origin"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnOrigin_Click"/>
-                        <Button x:Name ="btnEnable"   Grid.Row="0" Grid.Column="1" Content="Enable"  Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="50,10,10,10" FontSize="14" Click="btnEnable_Click" />
-                        <Button x:Name ="btnHalt"     Grid.Row="1" Grid.Column="0" Content="Halt"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnHalt_Click"/>
-                        <Button x:Name ="btnDisable"  Grid.Row="1" Grid.Column="1" Content="Disable"  Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="50,10,10,10" FontSize="14" Click="btnDisable_Click"/>
-                        <Button x:Name ="btnROrigin"     Grid.Row="2" Grid.Column="0" Content="ROrigin"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnROrigin_Click"/>
-                        <Button x:Name ="btnRForceStop"  Grid.Row="2" Grid.Column="1" Content="RForce Stop"  Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="50,10,10,10" FontSize="14" Click="btnRForceStop_Click"/>
+                        <Button x:Name ="btnOrigin"      Grid.Row="0" Grid.Column="0" Content="origin"       Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnOrigin_Click"/>
+                        <Button x:Name ="btnHalt"        Grid.Row="0" Grid.Column="1" Content="Halt"         Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnHalt_Click"/>
+                        <Button x:Name ="btnROrigin"     Grid.Row="1" Grid.Column="0" Content="ROrigin"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnROrigin_Click"/>
+                        <Button x:Name ="btnRForceStop"  Grid.Row="1" Grid.Column="1" Content="RForce Stop"  Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnRForceStop_Click"/>
                         
+                        <Button x:Name ="btnXMove"      Grid.Row="2" Grid.Column="0" Content="X Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnXMove_Click"/>
+                        <Button x:Name ="btnYMove"      Grid.Row="3" Grid.Column="0" Content="Y Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnYMove_Click"/>
+                        <Button x:Name ="btnZMove"      Grid.Row="4" Grid.Column="0" Content="Z Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnZMove_Click"/>
+                        <Button x:Name ="btnRMove"      Grid.Row="5" Grid.Column="0" Content="R Move (deg)"     Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnRMove_Click"/>
                         
-                        <Button x:Name ="btnXMove"      Grid.Row="3" Grid.Column="0" Content="X Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnXMove_Click"/>
-                        <Button x:Name ="btnYMove"      Grid.Row="4" Grid.Column="0" Content="Y Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnYMove_Click"/>
-                        <Button x:Name ="btnZMove"      Grid.Row="5" Grid.Column="0" Content="Z Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnZMove_Click"/>
-                        <Button x:Name ="btnRMove"      Grid.Row="6" Grid.Column="0" Content="R Move"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnRMove_Click"/>
-                        
-                        <Button x:Name ="btnXDisable"      Grid.Row="7" Grid.Column="0" Content="XDisable" Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnXDisable_Click"/>
-                        <Button x:Name ="btnYDisable"      Grid.Row="7" Grid.Column="1" Content="YDisable" Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnYDisable_Click"/>
-                        <Button x:Name ="btnZDisable"      Grid.Row="8" Grid.Column="0" Content="ZDisable" Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnZDisable_Click"/>
+                        <Button x:Name ="btnZDisable"      Grid.Row="7" Grid.Column="0" Content="Focus Stop" Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnZDisable_Click"/>
+                        <UniformGrid Grid.Row="6" Grid.ColumnSpan="2" Columns="4">
+                            <Label Content="Disable" HorizontalAlignment="Center" Margin="35,10,10,10" FontSize="14"/>
+                            <CheckBox x:Name="ckbXDisa" Content=" : X"   FlowDirection="RightToLeft"  HorizontalAlignment="Center" VerticalAlignment="Center" Checked="ckbXDisa_Checked" Unchecked="ckbXDisa_Unchecked"/>
+                            <CheckBox x:Name="ckbYDisa" Content=" : Y"   FlowDirection="RightToLeft" HorizontalAlignment="Center"  VerticalAlignment="Center" Checked="ckbYDisa_Checked" Unchecked="ckbYDisa_Unchecked"/>
+                            <CheckBox x:Name="ckbZDisa" Content=" : Z"   FlowDirection="RightToLeft" HorizontalAlignment="Center"  VerticalAlignment="Center" Checked="ckbZDisa_Checked" Unchecked="ckbZDisa_Unchecked"/>
 
-                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
-                            <Label Content="X :" HorizontalAlignment="Left" Margin="10,10,10,10" FontSize="16"/>
-                            <mahapps:NumericUpDown x:Name="nudGoXPos"   StringFormat="0.00" Height="24" Width="120" Minimum="0" Maximum="299" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="1,10,10,10" />
-                        </StackPanel>
+                        </UniformGrid>
+                        <Button x:Name ="btnFocus"      Grid.Row="7" Grid.Column="1" Content="Focus" Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnFocus_Click"/>
+                        <Button x:Name ="btnTest"       Grid.Row="8" Grid.Column="0" Content="Test" Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnTest_Click"/>
+                        <Label x:Name="lblTest"         Grid.Row="8" Grid.Column="1" Content="Test" VerticalAlignment="Center"  HorizontalAlignment="Left"     Margin="20,1,10,1" FontSize="14"/>
 
-                        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
-                            <Label Content="Y :" HorizontalAlignment="Left" Margin="10,10,10,10" FontSize="16"/>
-                            <mahapps:NumericUpDown x:Name="nudGoYPos" StringFormat="0.00" Height="24" Minimum="0" Maximum="299" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="1,10,10,10" />
-                         </StackPanel>
-
-                        <mahapps:NumericUpDown x:Name="nudGoZPos" Grid.Row="5" Grid.Column="1"  Minimum="0" Maximum="49" StringFormat="0.00" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" />
-                        <mahapps:NumericUpDown x:Name="nudGoRPos" Grid.Row="6" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" />
+                        <mahapps:NumericUpDown x:Name="nudGoXPos" StringFormat="0.00" Grid.Row="2" Grid.Column="1" Height="24" Width="120" Minimum="0" Maximum="299" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" HasDecimals="True" />
+                        <mahapps:NumericUpDown x:Name="nudGoYPos" StringFormat="0.00" Grid.Row="3" Grid.Column="1" Height="24" Width="120" Minimum="0" Maximum="299"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" HasDecimals="True" />
+                        <mahapps:NumericUpDown x:Name="nudGoZPos" StringFormat="0.000" Grid.Row="4" Grid.Column="1" Height="24" Width="120" Maximum="49"   Minimum="0"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" HasDecimals="True" />
+                        <mahapps:NumericUpDown x:Name="nudGoRPos" StringFormat="0.00" Grid.Row="5" Grid.Column="1" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" />
 
                     </Grid>
                 </mahapps:Flyout>

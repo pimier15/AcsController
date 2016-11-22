@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PLImg_V2
 {
-    class AutoFocus
+    public class AutoFocus
     {
     }
 }

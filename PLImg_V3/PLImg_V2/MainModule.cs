@@ -37,14 +37,9 @@ namespace PLImg_V2
 
         public event TransbyteArr       evtByteArrOneLine     ;
         public event TransImgArr        evtRealimg            ;
-        public event TransImgArr        evtScanImgOnGoing     ;
         public event TransSplitImgArr   evtFScanImgOnGoing    ;
-        public event TransLineBuffNum   evtlineUnitNum        ;
-        public event TransNumber        evtBuffNum            ;
-        public event TransScanStatus    evtLineScanStart      ;
-        public event TransScanStatus    evtLineScanCom        ;
-        //public event TransScanStatus    evtFullScanStart      ;
-        public event TransScanStatus    evtFullScanCom        ;
+        public event TransScanStatus    evtScanStart      ;
+        public event TransScanStatus    evtScanEnd        ;
         public event TransDoubleNumber  evtVarianceValue      ;
         public event TransFeedBackPos   evtFeedbackPos        ;
 
@@ -52,7 +47,6 @@ namespace PLImg_V2
         MessageBasedSession   MbSession       ;
         AFCalc                AFMeasrue       ;
         FullScanData          DataFullScan    ;
-        CheckAndCreateFolder  FolderControl   ;
         IGrabMana             GrabM           ;
         IMemberDefine         DalsaMemObj     ;
         GrabStatus            StatusGrab      ;
@@ -106,12 +100,14 @@ namespace PLImg_V2
             evtRealimg(Buff2Img(buffData, 1));
             ScanDirec = ScanDirection.Forward;
 
+            Console.WriteLine( StatusFullScan.ToString() );
+
             #region New
             switch (StatusFullScan) {
                 case FullScanState.Stop:
                     StatusFullScan = FullScanState.Wait;
                     Freeze();
-                    evtFullScanCom();
+                    //evtScanEnd();
                     break;
 
                 case FullScanState.Pause:
@@ -137,8 +133,9 @@ namespace PLImg_V2
                     break;
 
                 case FullScanState.Start:
+                    //evtScanStart();
                     ImgSrcByte = Matrix.Concatenate<byte>(ImgSrcByte, buffData);
-                    SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
+                    //SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
 
                     evtFScanImgOnGoing(Buff2Img(ImgSrcByte, BuffCount+1), LineCount, UnitCount);
                     //evtlineUnitNum(LineCount, UnitCount); // for Watch
@@ -180,9 +177,11 @@ namespace PLImg_V2
 
         void ProfileEventMethod(object sender, EventArgs e)
         {
-            byte[] buffOneLineDatga = GrabM.DataTransFromBufferOneLine(DalsaMemObj.Buffers);
-            evtByteArrOneLine(ArrayControl.Slice(buffOneLineDatga, 0, 6143));
-            evtVarianceValue(AFMeasrue.CalcAFV (ArrayControl.Slice(buffOneLineDatga, 0, 12243)) );
+            byte[] sliced = GrabM.DataTransFromBufferOneLine(DalsaMemObj.Buffers);
+            //byte[] sliced = ArrayControl.Slice( buffOneLineDatga, 0, 6143 );
+            //buffOneLineDatga = null;
+            evtVarianceValue( AFMeasrue.CalcAFV( sliced ) );
+            evtByteArrOneLine( sliced );
         }
 
         async void SaveLineDat(byte[] inputArr, int buffNum, int scanNum)
@@ -201,7 +200,7 @@ namespace PLImg_V2
             while ( true )
             {
                 evtFeedbackPos( AcsXYZControl.GetMotorFPos() );
-                System.Threading.Thread.Sleep( 50 );
+                Task.Delay( 500 ).Wait();
             }
         }
         #endregion
@@ -219,7 +218,6 @@ namespace PLImg_V2
             DataFullScan.LineLimit = 0;
             InitCount();
             SetDir();
-            evtLineScanStart();
             await Task.Run(()=> {
                 ImgSrcByte = new byte[0];
                 AcsXYZControl.XMove( endposX );
@@ -227,12 +225,13 @@ namespace PLImg_V2
             });
         }
 
-        public void ReadyLineScan( int startpos )
+        async public void ReadyLineScan( int startpos )
         {
             AcsXYZControl.SetXSpeed( 200 );
             AcsXYZControl.XMove( startpos );
             AcsXYZControl.Wait2ArriveEpsilon( "X", startpos, 1.0 );
             AcsXYZControl.SetXSpeed( DataFullScan.ScanSpeed );
+            await Task.Delay( 1500 );
         }
 
         public async void StartFullScan(int startposX, int startposY,int endposX, int xSpeed)
@@ -240,6 +239,7 @@ namespace PLImg_V2
             DataFullScan.LineLimit = 3;
             InitCount();
             SetDir();
+            
             await Task.Run(() => {
                 //ScanInit(startposX, startposX, endposX, xSpeed);
                 ImgSrcByte = new byte[0];
@@ -334,7 +334,7 @@ namespace PLImg_V2
         #endregion
 
         #region XYStageOrder
-        public void EnableStage( ) { AcsXYZControl.EnableMotor(); }
+        public void EnableStage( int axis ) { AcsXYZControl.EnableMotor(axis); }
 
         public void DisableStage( int axis ) {
                 AcsXYZControl.DisableMotor( axis );
@@ -346,7 +346,7 @@ namespace PLImg_V2
 
         public void XMoveAbsPos(int posX )
         {
-            AcsXYZControl.SetXSpeed( 200 );
+            AcsXYZControl.SetXSpeed( 400 );
             AcsXYZControl.XMove( posX );
             AcsXYZControl.Wait2ArriveEpsilon( "X", posX, 1.0 );
             AcsXYZControl.SetXSpeed( DataFullScan.ScanSpeed );
@@ -359,7 +359,7 @@ namespace PLImg_V2
 
         public void YMoveAbsPos(int posY )
         {
-            AcsXYZControl.SetYSpeed( 200 );
+            AcsXYZControl.SetYSpeed( 400 );
             AcsXYZControl.YMove( posY );
             AcsXYZControl.Wait2ArriveEpsilon( "Y", posY, 1.0 );
         }
@@ -404,9 +404,13 @@ namespace PLImg_V2
             
         }
 
-        public void ZMoveAbsPos(int posZ)
+        public void ZMoveAbsPos(double posZ)
         {
             AcsXYZControl.ZMove( posZ );
+        }
+
+        public void ZMoveRelPos(double posZ ) {
+            AcsXYZControl.ZMoveRel( posZ );
         }
 
         public void ZWait2Arrive(int targetPosZ)
@@ -449,7 +453,7 @@ namespace PLImg_V2
         void TimerSetting()
         {
             ProfileTimer = new Timer();
-            ProfileTimer.Interval = 100;
+            ProfileTimer.Interval = 500;
             ProfileTimer.Tick += new EventHandler(ProfileEventMethod);
         }
 
@@ -501,8 +505,9 @@ namespace PLImg_V2
 
         public void RStageInit( int port )
         {
-            RStageControler = new SigmaRStageControl();
-            if ( !RStageControler.RStageConnect( port.ToString() ) ) { RStageControler = new DummySigmaRStageControl(); }
+            RStageControler = new DummySigmaRStageControl();
+            //RStageControler = new SigmaRStageControl();
+            //if ( !RStageControler.RStageConnect( port.ToString() ) ) { RStageControler = new DummySigmaRStageControl(); }
         }
 
         public void ConnectVISA2Cam(string path)
@@ -517,10 +522,7 @@ namespace PLImg_V2
             UnitCount = 0;
             LineCount = 0;
         }
-
-        public void DisposeStage( ) {
-            AcsXYZControl.Dispose();
-        }
+       
         #endregion
 
         #region Save
@@ -549,5 +551,13 @@ namespace PLImg_V2
             }
         }
         #endregion
+
+
+        public void TestMethod() {
+
+
+
+        }
+
     }
 }
