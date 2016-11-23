@@ -217,9 +217,9 @@ namespace PLImg_V2
 
             imgboxReal.SizeMode = PictureBoxSizeMode.StretchImage;
 
-            //ModMain.ConnectVISA2Cam( CamPath );
+            ModMain.ConnectVISA2Cam( CamPath );
             ModMain.XYZStageInit( ControllerIP );
-            ModMain.XYZStageInitCom( XYStagePort );
+            //ModMain.XYZStageInitCom( XYStagePort );
             ModMain.RStageInit( RStagePort );
 
             InitViewWin();
@@ -538,6 +538,7 @@ namespace PLImg_V2
             ModMain.DisableStage( 0 );
             ModMain.DisableStage( 1 );
             ModMain.DisableStage( 2 );
+            ModMain.RStageClose();
         }
 
         private void btnZDisable_Click( object sender, RoutedEventArgs e ) {

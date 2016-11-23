@@ -48,6 +48,10 @@ namespace PLImg_V2
             return buffer;
         }
 
+        public void Write( string str ) {
+            mbSession.Write( str );
+        }
+
         internal void SetTimeOut( int p )
         {
             mbSession.ReadTimeout = p;

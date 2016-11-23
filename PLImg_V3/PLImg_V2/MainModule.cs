@@ -52,7 +52,7 @@ namespace PLImg_V2
         GrabStatus            StatusGrab      ;
         FullScanState         StatusFullScan  ;
         ICameraSetting        CameraSet       ;
-        ISigmakokiStageUnit   RStageControler ;
+        ISigmakokiStageUnit   RStageController ;
         AcsContol             AcsXYZControl   ;
 
         Image<Gray, byte>     CurrentImg      ;
@@ -430,22 +430,26 @@ namespace PLImg_V2
         #region RStage Order
         public void ROrigin( )
         {
-            RStageControler.Origin();
+            RStageController.Origin();
         }
 
         public void RMoveAbsPos( int posR )
         {
-            RStageControler.MoveAbsPos( posR );
+            RStageController.MoveAbsPos( posR );
         }
 
         public void RWait2Arrive( int targetPosR)
         {
-            RStageControler.Wait2Arrive( targetPosR );
+            RStageController.Wait2Arrive( targetPosR );
         }
 
         public void RSetSpeed( int speedR, int accR )
         {
-            RStageControler.SetRSpeed( speedR, accR );
+            RStageController.SetRSpeed( speedR, accR );
+        }
+
+        public void RStageClose( ) {
+            RStageController.RstageRelease();
         }
         #endregion
 
@@ -505,9 +509,9 @@ namespace PLImg_V2
 
         public void RStageInit( int port )
         {
-            RStageControler = new DummySigmaRStageControl();
-            //RStageControler = new SigmaRStageControl();
-            //if ( !RStageControler.RStageConnect( port.ToString() ) ) { RStageControler = new DummySigmaRStageControl(); }
+            //RStageControler = new DummySigmaRStageControl();
+            RStageController = new SigmaRStageControl();
+            if ( !RStageController.RStageConnect( port.ToString() ) ) { RStageController = new DummySigmaRStageControl(); }
         }
 
         public void ConnectVISA2Cam(string path)
@@ -554,8 +558,6 @@ namespace PLImg_V2
 
 
         public void TestMethod() {
-
-
 
         }
 

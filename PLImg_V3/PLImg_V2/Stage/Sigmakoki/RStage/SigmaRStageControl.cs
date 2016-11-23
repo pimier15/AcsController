@@ -10,8 +10,8 @@ namespace PLImg_V2
 {
     public class SigmaRStageControl : ISigmaKokiStage.ISigmakokiStageUnit
     {
-        MessageBasedSession connect; 
-        //SerialCom connect;
+        //MessageBasedSession connect; 
+        SerialCom connect;
 
         public string MovePosSetCommand { get { return "A:1{0}P{1}"; } set {; } }
         public string MoveSettedPosCommand { get { return "G:"; } set {; } }
@@ -40,11 +40,11 @@ namespace PLImg_V2
         {
             try
             {
-                connect = (MessageBasedSession)ResourceManager.GetLocalManager().Open( "COM" + port );
-                connect.SetAttributeInt32( NationalInstruments.VisaNS.AttributeType.AsrlBaud, 38400 );
-                connect.Timeout = 1000;
-                //connect = new SerialCom();
-                //connect.OpenSession( port );
+                //connect = (MessageBasedSession)ResourceManager.GetLocalManager().Open( "COM" + port );
+                //connect.SetAttributeInt32( NationalInstruments.VisaNS.AttributeType.AsrlBaud, 38400 );
+                //connect.Timeout = 1000;
+                connect = new SerialCom();
+                connect.OpenSession( port );
                 return true;
             }
             catch ( Exception ex)
@@ -58,8 +58,8 @@ namespace PLImg_V2
         {
             try
             {
-                //connect.CloseSession();
-                connect.Dispose();
+                connect.CloseSession();
+                //connect.Dispose();
                 return true;
             }
             catch ( Exception ex )
