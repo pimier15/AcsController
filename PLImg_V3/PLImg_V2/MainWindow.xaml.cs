@@ -590,7 +590,7 @@ namespace PLImg_V2
         #endregion
 
         private void btnTest_Click( object sender, RoutedEventArgs e ) {
-            ModMain.ZMoveRelPos( 0.01 );
+            ModMain.TestMethod();
         }
     }
 }
