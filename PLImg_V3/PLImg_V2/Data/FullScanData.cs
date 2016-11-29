@@ -21,6 +21,6 @@ namespace PLImg_V2
         public readonly int UnitLimit = 0;
         public int LineLimit = 3;
 
-        public int ScanSpeed = 1;
+        public int ScanSpeed = 3;
     }
 }

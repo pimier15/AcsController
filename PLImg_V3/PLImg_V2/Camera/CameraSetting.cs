@@ -11,12 +11,12 @@ namespace PLImg_V2
     {
         public void SetExposureTime(MessageBasedSession mbSession, double time)
         {
-            mbSession.Query("set " + time.ToString() + "\r\n");
+            mbSession.Query("set " + time.ToString() + "\r");
         }
 
         public void SetLineRate(MessageBasedSession mbSession, int rate)
         {
-            mbSession.Query("ssf " + rate.ToString() + "\r\n");
+            mbSession.Query("ssf " + rate.ToString() + "\r");
         }
     }
 }
