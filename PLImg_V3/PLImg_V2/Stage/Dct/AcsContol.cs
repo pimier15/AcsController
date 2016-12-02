@@ -101,7 +101,7 @@ namespace PLImg_V2
             zmove( pos );
         }
 
-        public void 
+        
 
         public void Wait2ArriveEpsilon( string axis, double targetPos, double epsilon ) {
             while ( true )

@@ -268,7 +268,7 @@ namespace PLImg_V2
 
         void InitViewWin( )
         {
-            nudEndXPos.Value = 85;
+            nudEndXPos.Value = 100;
             nudStartXPos.Value = 138;
             nudStartYPos.Value = 0;
             nudEndYPos.Value = 0;
@@ -279,7 +279,7 @@ namespace PLImg_V2
             nudRSpeed.Value = 200;
             nudGoXPos.Value = 100;
             nudGoYPos.Value = 50;
-            nudGoZPos.Value = 28.41;
+            nudGoZPos.Value = 27.795;
             nudZSpeed.Value = 10;
         }
 

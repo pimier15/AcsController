@@ -218,9 +218,13 @@ namespace PLImg_V2
             DataFullScan.LineLimit = 0;
             InitCount();
             SetDir();
+            DalsaMemObj.Xfer.Freeze();
+            DalsaMemObj.Buffers.Clear();
+            System.Threading.Thread.Sleep( 300 );
             await Task.Run(()=> {
                 ImgSrcByte = new byte[0];
                 AcsXYZControl.XMove( endposX );
+                DalsaMemObj.Xfer.Grab();
                 StatusFullScan = FullScanState.Start;
             });
         }
@@ -494,12 +498,12 @@ namespace PLImg_V2
         public void XYZStageInit(string addIP)
         {
             AcsXYZControl.Connect( addIP );
-            AcsXYZControl.Home();
+            //AcsXYZControl.Home();
         }
 
         public void XYZStageInitCom( string comport ) {
             AcsXYZControl.ConnectCom( comport );
-            AcsXYZControl.Home();
+            //AcsXYZControl.Home();
         }
 
         public void RStageInit( int port )
