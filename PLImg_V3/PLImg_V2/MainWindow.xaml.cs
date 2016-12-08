@@ -218,8 +218,8 @@ namespace PLImg_V2
             imgboxReal.SizeMode = PictureBoxSizeMode.StretchImage;
 
             ModMain.ConnectVISA2Cam( CamPath );
-            ModMain.XYZStageInit( ControllerIP );
-            //ModMain.XYZStageInitCom( XYStagePort );
+            //ModMain.XYZStageInit( ControllerIP );
+            ModMain.XYZStageInitCom( XYStagePort );
             ModMain.RStageInit( RStagePort );
 
             InitViewWin();
@@ -278,9 +278,12 @@ namespace PLImg_V2
             nudlinerate.Value = 4000;
             nudRSpeed.Value = 200;
             nudGoXPos.Value = 100;
-            nudGoYPos.Value = 50;
+            nudGoYPos.Value = 55;
             nudGoZPos.Value = 27.795;
             nudZSpeed.Value = 10;
+            nudScanbuffNum.Value = 12;
+            nudScanUnitNum.Value = 0;
+            nudScanSpeed.Value = 1;
         }
 
         void DisplayPos(double[] inputPos)
@@ -407,7 +410,7 @@ namespace PLImg_V2
         {
             if ( YStageState == StageEnableState.Enabled )
             {
-                ModMain.YMoveAbsPos( (int)nudGoYPos.Value );
+                ModMain.YMoveAbsPos( (double)nudGoYPos.Value );
 
                 if ( !FeedBackOn )
                 {
@@ -423,7 +426,7 @@ namespace PLImg_V2
         {
             if ( XStageState == StageEnableState.Enabled )
             {
-                ModMain.XMoveAbsPos( (int)nudGoXPos.Value );
+                ModMain.XMoveAbsPos( (double)nudGoXPos.Value );
                 if ( !FeedBackOn )
                 {
                     Task.Run( ( ) => ModMain.GetFeedbackPos() );
@@ -443,7 +446,7 @@ namespace PLImg_V2
         // R Stage //
         private void btnRMove_Click( object sender, RoutedEventArgs e )
         {
-            int pulse = (int)nudGoRPos.Value * 400;
+            double pulse = (double)nudGoRPos.Value * 400;
 
             ModMain.RMoveAbsPos( pulse );
         }
@@ -590,7 +593,20 @@ namespace PLImg_V2
         #endregion
 
         private void btnTest_Click( object sender, RoutedEventArgs e ) {
-            ModMain.TestMethod();
+            string output = ModMain.RPositionRead();
+            lblTest.Content = output;
+        }
+
+        private void btnScanSize_Click( object sender, RoutedEventArgs e ) {
+            ModMain.ChangeBuffNum( (int)nudScanbuffNum.Value );
+        }
+
+        private void btnScanUnitSize_Click( object sender, RoutedEventArgs e ) {
+            ModMain.ChangeUnitNum( (int)nudScanUnitNum.Value );
+        }
+
+        private void nudScanSpeed_KeyUp( object sender, System.Windows.Input.KeyEventArgs e ) {
+            ModMain.ChangeScanSpeed( (int)nudScanSpeed.Value );
         }
     }
 }

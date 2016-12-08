@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace PLImg_V2
 {
-    public class SigmaRStageControl : ISigmaKokiStage.ISigmakokiStageUnit
+    public class SigmaRStageControl 
     {
         MessageBasedSession connect; 
         //SerialCom connect;
@@ -24,9 +24,9 @@ namespace PLImg_V2
             Write( ForceStopCommand );
         }
 
-        public void MoveAbsPos( int pos )
+        public void MoveAbsPos( double pos )
         {
-            Write( String.Format( MovePosSetCommand, pos > 0 ? "+" : "-", (int)Math.Abs( pos ) ) );
+            Write( String.Format( MovePosSetCommand, pos > 0 ? "+" : "-", (double)Math.Abs( pos ) ) );
             Thread.Sleep( 500 );
             Write( MoveSettedPosCommand );
         }
@@ -97,6 +97,14 @@ namespace PLImg_V2
             Write( MoveSettedPosCommand );
         }
 
+        public string GetPosition( ) {
+            return Query( StatusCommand );
+        }
+
+        public string RRead( ) {
+            return Read();
+        }
+
 
         #region OrderCommand
         public string Query( string command )
@@ -106,7 +114,15 @@ namespace PLImg_V2
 
         public string Read( )
         {
-            return "not supported";
+            try
+            {
+                return connect.ReadString();
+            }
+            catch ( Exception )
+            {
+                return "Fail";
+            }
+            
         }
 
         public void Write( string command )

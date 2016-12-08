@@ -78,13 +78,13 @@ namespace PLImg_V2
         }
 
         /*Move*/
-        public void XMove( int pos )
+        public void XMove( double pos )
         {
             var xmove = FcMove(Axis["X"]);
             xmove( pos );
         }
 
-        public void YMove( int pos )
+        public void YMove( double pos )
         {
             var ymove = FcMove(Axis["Y"]);
             ymove( pos );

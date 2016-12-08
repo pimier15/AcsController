@@ -50,8 +50,9 @@
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
                 </Grid.RowDefinitions>
                 <Label Content="Measurement" Grid.Row="0" Grid.ColumnSpan="2"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Center"/>
 
@@ -61,6 +62,8 @@
                 <Button x:Name ="btnFreeze"     Grid.Row="2" Grid.Column="1" Content="Freeze"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnFreeze_Click"/>
                 <Button x:Name ="btnSaveData"   Grid.Row="3" Grid.Column="0" Content="Save Data"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnSaveData_Click"/>
                 <Button x:Name ="btnSaveImg"    Grid.Row="3" Grid.Column="1" Content="Save Img"    Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnSaveData_Click"/>
+                <Button x:Name ="btnScanSize"    Grid.Row="8" Grid.Column="0" Content="Scan Buff Num"    Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnScanSize_Click"/>
+                <Button x:Name ="btnScanUnitSize"    Grid.Row="9" Grid.Column="0" Content="Scan Unit Num"    Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="14" Click="btnScanUnitSize_Click"/>
                 
                 <Label Grid.Row="4" FontWeight="Bold" Content="Start XPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="16" />
                 <Label Grid.Row="5" FontWeight="Bold" Content="Start YPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="16" />
@@ -71,9 +74,9 @@
                 <mahapps:NumericUpDown x:Name="nudStartYPos" Grid.Row="5" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
                 <mahapps:NumericUpDown x:Name="nudEndXPos"   Grid.Row="6" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
                 <mahapps:NumericUpDown x:Name="nudEndYPos"   Grid.Row="7" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-
+                <mahapps:NumericUpDown x:Name="nudScanbuffNum"   Grid.Row="8" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" Maximum="9000" Minimum="1" />
+                <mahapps:NumericUpDown x:Name="nudScanUnitNum"   Grid.Row="9" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" Maximum="9000" Minimum="1" />
             </Grid>
-
             
             
             <!--플라이 아웃 세팅 -->
@@ -102,6 +105,7 @@
                         <Label Grid.Row="3" Content="YStage Speed"  FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="16" />
                         <Label Grid.Row="4" Content="ZStage Speed"  FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="16" />
                         <Label Grid.Row="5" Content="RStage Speed"  FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="16" />
+                        <Label Grid.Row="6" Content="Scan Speed mm/sec"  FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="16" />
 
                         <mahapps:NumericUpDown x:Name="nudExtime"   Grid.Row="0" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0.0" ValueChanged="nudExtime_ValueChanged"/>
                         <mahapps:NumericUpDown x:Name="nudlinerate" Grid.Row="1" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0"   KeyUp="nudlinerate_KeyUp"  ValueChanged="nudlinerate_ValueChanged"/>
@@ -109,6 +113,7 @@
                         <mahapps:NumericUpDown x:Name="nudYSpeed"   Grid.Row="3" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0"   KeyUp="nudYSpeed_KeyUp"/>
                         <mahapps:NumericUpDown x:Name="nudZSpeed"   Grid.Row="4" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0"   KeyUp="nudZSpeed_KeyUp"/>
                         <mahapps:NumericUpDown x:Name="nudRSpeed"   Grid.Row="5" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0"   KeyUp="nudRSpeed_KeyUp"/>
+                        <mahapps:NumericUpDown x:Name="nudScanSpeed"   Grid.Row="6" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0" KeyUp="nudScanSpeed_KeyUp"/>
 
                         
                     </Grid>

@@ -218,13 +218,11 @@ namespace PLImg_V2
             DataFullScan.LineLimit = 0;
             InitCount();
             SetDir();
-            DalsaMemObj.Xfer.Freeze();
-            DalsaMemObj.Buffers.Clear();
-            System.Threading.Thread.Sleep( 300 );
             await Task.Run(()=> {
                 ImgSrcByte = new byte[0];
+                System.Threading.Thread.Sleep( 2000 );
                 AcsXYZControl.XMove( endposX );
-                DalsaMemObj.Xfer.Grab();
+                System.Threading.Thread.Sleep( 2500 );
                 StatusFullScan = FullScanState.Start;
             });
         }
@@ -348,7 +346,7 @@ namespace PLImg_V2
         {
         }
 
-        public void XMoveAbsPos(int posX )
+        public void XMoveAbsPos( double posX )
         {
             AcsXYZControl.SetXSpeed( 400 );
             AcsXYZControl.XMove( posX );
@@ -361,7 +359,7 @@ namespace PLImg_V2
             AcsXYZControl.DisZ();
         }
 
-        public void YMoveAbsPos(int posY )
+        public void YMoveAbsPos( double posY )
         {
             AcsXYZControl.SetYSpeed( 400 );
             AcsXYZControl.YMove( posY );
@@ -437,7 +435,7 @@ namespace PLImg_V2
             RStageController.Origin();
         }
 
-        public void RMoveAbsPos( int posR )
+        public void RMoveAbsPos( double posR )
         {
             RStageController.MoveAbsPos( posR );
         }
@@ -445,6 +443,23 @@ namespace PLImg_V2
         public void RSetSpeed( int speedR, int accR )
         {
             RStageController.SetRSpeed( speedR, accR );
+        }
+
+        public string RGetPosition( ) {
+            return RStageController.GetPosition();
+        }
+        public string RPositionRead( ) {
+            string fir = RStageController.GetPosition();
+            var splitarr = fir.Split( ',' );
+            try
+            {
+                var output = Convert.ToDouble(splitarr[0]) / 400 ;
+                return output.ToString();
+            }
+            catch ( Exception )
+            {
+                return  "999.99";
+            }
         }
 
         public void RStageClose( ) {
@@ -556,6 +571,18 @@ namespace PLImg_V2
         }
         #endregion
 
+        public void ChangeBuffNum(int input ) {
+            DataFullScan.BuffLimit = input;
+        }
+
+        public void ChangeUnitNum(int input ) {
+            DataFullScan.UnitLimit = input;
+        }
+
+        public void ChangeScanSpeed(int input ) {
+            DataFullScan.ScanSpeed = input;
+
+        }
 
         public void TestMethod() {
             RStageController.GO();
